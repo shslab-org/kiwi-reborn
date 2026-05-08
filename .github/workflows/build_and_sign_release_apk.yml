@@ -51,7 +51,7 @@ jobs:
             --revision=src@${{ steps.ver.outputs.version }} \
             -D
 
-      - name: Apply Kiwi patches on top of Chromium
+      - name: Apply Kiwi patches
         run: |
           for dir in base chrome components content extensions net remoting services third_party ui; do
             if [ -d "kiwi-patches/$dir" ]; then
@@ -74,30 +74,34 @@ jobs:
         run: |
           cd chromium/src
           gn gen out/arm64 --args='
-            target_os="android"
-            target_cpu="arm64"
-            is_debug=false
-            is_component_build=false
-            is_official_build=false
-            ffmpeg_branding="Chrome"
-            proprietary_codecs=true
-            android_channel="stable"
-            chrome_pgo_phase=0
+            # These must come FIRST
+            enable_updater = false
+            enable_chrome_update = false
+            enable_update_notifications = false
 
-            # Required for Chromium 148
-            enable_updater=false
-            enable_chrome_update=false
-            enable_update_notifications=false
-            enable_autofill_assistant=false
-            enable_reading_list=false
-            enable_supervised_users=false
-            enable_managed_users=false
-            enable_dangling_pointer_detection=false
-            enable_offline_pages=false
-            enable_vr=false
-            enable_arc=false
-            enable_cast=false
-            enable_nacl=false
+            target_os = "android"
+            target_cpu = "arm64"
+            is_debug = false
+            is_component_build = false
+            is_official_build = false
+            ffmpeg_branding = "Chrome"
+            proprietary_codecs = true
+            android_channel = "stable"
+            chrome_pgo_phase = 0
+
+            # Additional recommended flags for Chromium 148
+            enable_autofill_assistant = false
+            enable_reading_list = false
+            enable_supervised_users = false
+            enable_managed_users = false
+            enable_dangling_pointer_detection = false
+            enable_offline_pages = false
+            enable_vr = false
+            enable_arc = false
+            enable_cast = false
+            enable_nacl = false
+            symbol_level = 0
+            blink_symbol_level = 0
           '
 
       - name: Compile APK
