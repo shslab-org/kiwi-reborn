@@ -83,6 +83,11 @@ jobs:
             proprietary_codecs=true
             android_channel="stable"
             chrome_pgo_phase=0
+            
+            # Fixes for Chromium 112+
+            enable_updater=false
+            enable_chrome_update=false
+            enable_update_notifications=false
           '
 
       - name: Compile APK
