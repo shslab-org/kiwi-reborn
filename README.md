@@ -8,3 +8,4 @@
 Important note: its an fork of the original kiwi repo just still maintained chromium updated and android api support updated nothing else changed.
 
 
+if you want any ui changes or new feature let me know i try my best to update it
