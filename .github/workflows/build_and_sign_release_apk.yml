@@ -74,11 +74,6 @@ jobs:
         run: |
           cd chromium/src
           gn gen out/arm64 --args='
-            # These must come FIRST
-            enable_updater = false
-            enable_chrome_update = false
-            enable_update_notifications = false
-
             target_os = "android"
             target_cpu = "arm64"
             is_debug = false
@@ -89,7 +84,7 @@ jobs:
             android_channel = "stable"
             chrome_pgo_phase = 0
 
-            # Additional recommended flags for Chromium 148
+            # Additional flags for Chromium 148
             enable_autofill_assistant = false
             enable_reading_list = false
             enable_supervised_users = false
