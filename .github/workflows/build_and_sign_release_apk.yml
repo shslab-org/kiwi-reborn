@@ -83,11 +83,21 @@ jobs:
             proprietary_codecs=true
             android_channel="stable"
             chrome_pgo_phase=0
-            
-            # Fixes for Chromium 112+
+
+            # Required for Chromium 148
             enable_updater=false
             enable_chrome_update=false
             enable_update_notifications=false
+            enable_autofill_assistant=false
+            enable_reading_list=false
+            enable_supervised_users=false
+            enable_managed_users=false
+            enable_dangling_pointer_detection=false
+            enable_offline_pages=false
+            enable_vr=false
+            enable_arc=false
+            enable_cast=false
+            enable_nacl=false
           '
 
       - name: Compile APK
