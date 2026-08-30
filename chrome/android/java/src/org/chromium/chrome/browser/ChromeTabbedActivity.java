@@ -2056,6 +2056,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     protected void initDeferredStartupForActivity() {
         super.initDeferredStartupForActivity();
         DeferredStartupHandler.getInstance().addDeferredTask(() -> {
+            // Kiwi Reborn Ultimate: initialize the native adblock engine
+            // (push prefs + cached filter lists, refresh stale ones).
+            org.chromium.chrome.browser.adblock.AdblockController.get().ensureInitialized();
+
             ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
             RecordHistogram.recordSparseHistogram(
                     "MemoryAndroid.DeviceMemoryClass", am.getMemoryClass());

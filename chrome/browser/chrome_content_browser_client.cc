@@ -34,6 +34,7 @@
 #include "chrome/browser/accessibility/accessibility_labels_service.h"
 #include "chrome/browser/accessibility/accessibility_labels_service_factory.h"
 #include "chrome/browser/after_startup_task_utils.h"
+#include "chrome/browser/adblock/adblock_url_loader_throttle.h"
 #include "chrome/browser/bluetooth/chrome_bluetooth_delegate_impl_client.h"
 #include "chrome/browser/browser_about_handler.h"
 #include "chrome/browser/browser_features.h"
@@ -4959,6 +4960,11 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
       signin::URLLoaderThrottle::MaybeCreate(std::move(delegate), wc_getter);
   if (signin_throttle)
     result.push_back(std::move(signin_throttle));
+
+  // Kiwi Reborn Ultimate: native EasyList-scale network-level adblocking.
+  result.push_back(
+      std::make_unique<AdblockURLLoaderThrottle>(wc_getter,
+                                                 frame_tree_node_id));
 
   return result;
 }
