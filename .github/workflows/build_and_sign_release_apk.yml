@@ -8,6 +8,20 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 360
 
+    # Chromium's build system produces one APK per ABI — a single "universal"
+    # APK containing both ABIs is not a supported configuration. So we build
+    # the two Android ABIs in parallel jobs instead:
+    #   arm64-v8a  -> modern devices (the vast majority)
+    #   armeabi-v7a -> legacy 32-bit devices
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - abi: arm64-v8a
+            cpu: arm64
+          - abi: armeabi-v7a
+            cpu: arm
+
     steps:
       - name: Free up disk space
         run: |
@@ -16,10 +30,13 @@ jobs:
           sudo rm -rf /opt/ghc
           df -h
 
-      - name: Checkout your patches
+      # Check out the branch/ref that triggered this run (default: kiwi).
+      # This way dispatching the workflow on a feature branch builds THAT
+      # branch's patches, not always the base kiwi branch.
+      - name: Checkout patches (triggering ref)
         uses: actions/checkout@v4
         with:
-          ref: kiwi
+          ref: ${{ github.ref_name }}
           path: kiwi-patches
 
       - name: Install depot_tools
@@ -70,12 +87,12 @@ jobs:
           cd chromium/src
           sudo ./build/install-build-deps.sh --android --no-prompt
 
-      - name: Generate build files (arm64)
+      - name: Generate build files (${{ matrix.abi }})
         run: |
           cd chromium/src
-          gn gen out/arm64 --args='
+          gn gen out/${{ matrix.cpu }} --args='
             target_os = "android"
-            target_cpu = "arm64"
+            target_cpu = "${{ matrix.cpu }}"
             is_debug = false
             is_component_build = false
             is_official_build = false
@@ -109,14 +126,14 @@ jobs:
             blink_symbol_level = 0
           '
 
-      - name: Compile APK
+      - name: Compile APK (${{ matrix.abi }})
         run: |
           cd chromium/src
-          autoninja -C out/arm64 chrome_public_apk
+          autoninja -C out/${{ matrix.cpu }} chrome_public_apk
 
-      - name: Upload APK as artifact
+      - name: Upload APK as artifact (${{ matrix.abi }})
         uses: actions/upload-artifact@v4
         with:
-          name: kiwi-reborn-arm64
-          path: chromium/src/out/arm64/apks/ChromePublic.apk
-          retention-days: 7
+          name: kiwi-reborn-${{ matrix.abi }}
+          path: chromium/src/out/${{ matrix.cpu }}/apks/ChromePublic.apk
+          retention-days: 14
