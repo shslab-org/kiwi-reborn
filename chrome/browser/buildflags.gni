@@ -16,3 +16,18 @@ declare_args() {
   # TODO(crbug.com/1054060)
   enable_chromium_updater = false
 }
+
+# --- Chromium 148 compatibility (from upstream chrome/browser/buildflags.gni @ 148.0.7778.96) ---
+# Stock Chromium 148 root BUILD.gn and chrome/BUILD.gn reference these args.
+# The legacy Kiwi overlay keeps using enable_chromium_updater (declared
+# above), so both generations must coexist in this file.
+declare_args() {
+  # By default, only branded builds allow for platform experience.
+  enable_platform_experience = is_chrome_branded
+
+  # By default, only branded builds integrate with automatic updates.
+  enable_updater = is_chrome_branded && !is_fuchsia && target_os != "android"
+
+  # Detect updates and notify the user for Google Chrome across all platforms.
+  enable_update_notifications = is_chrome_branded
+}

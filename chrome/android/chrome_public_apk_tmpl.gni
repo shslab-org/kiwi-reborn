@@ -764,3 +764,11 @@ template("split_manifest_template") {
                ])
   }
 }
+
+# --- Chromium 148 compatibility (from upstream chrome/android/chrome_public_apk_tmpl.gni @ 148.0.7778.96) ---
+declare_args() {
+  # Android package name used when compiling the public chrome targets.
+  # Kiwi's own template targets set their packages explicitly; declaring this
+  # keeps stock Chromium 148 files that reference the arg resolvable.
+  chrome_public_manifest_package = "org.chromium.chrome"
+}

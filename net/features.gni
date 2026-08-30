@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
+import("//build/config/cronet/config.gni")
 
 declare_args() {
   # Disables support for file URLs.  File URL support requires use of icu.
@@ -48,4 +49,34 @@ declare_args() {
   # Platforms for which the builtin cert verifier can use the Chrome Root Store.
   # See https://crbug.com/1216547 for status.
   chrome_root_store_supported = is_win || is_mac
+}
+
+# --- Chromium 148 compatibility (from upstream net/features.gni @ 148.0.7778.96) ---
+# Stock Chromium 148 files reference these build args; the overlay's copy of
+# this file predates them. Legacy Kiwi args above are kept untouched.
+declare_args() {
+  # Do not disable zstd filter by default.
+  disable_zstd_filter = false
+
+  # Platforms where certificate verification can use either the builtin cert
+  # verifier with the Chrome Root Store or a platform verifier.
+  chrome_root_store_optional = is_android && !is_cronet_build
+
+  # Platforms for which certificate verification can only be performed using
+  # the builtin cert verifier with the Chrome Root Store.
+  chrome_root_store_only = is_win || is_mac || is_linux || is_chromeos
+
+  # DBSC is only supported on Windows, Linux and Mac for now.
+  enable_device_bound_sessions = is_win || is_linux || is_mac
+
+  # Bracketed URIs parsing is only available for debug builds.
+  enable_bracketed_proxy_uris = is_debug
+
+  # General QUIC proxy support is only available for debug builds.
+  enable_quic_proxy_support = is_debug
+
+  # The SQL disk cache backend is an experimental feature.
+  enable_disk_cache_sql_backend =
+      (is_android && !is_cast_android && !is_cronet_build) || is_win ||
+      is_mac || is_chromeos
 }
