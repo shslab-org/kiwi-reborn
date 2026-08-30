@@ -10,8 +10,6 @@ import android.content.SharedPreferences;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 
 import java.io.BufferedReader;
 import java.io.File;
