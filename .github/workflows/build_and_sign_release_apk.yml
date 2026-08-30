@@ -84,6 +84,16 @@ jobs:
             android_channel = "stable"
             chrome_pgo_phase = 0
 
+            # Optional Google API / OAuth keys (for Google Account sync and
+            # related Google services). Provide these as GitHub Actions
+            # secrets GOOGLE_API_KEY, GOOGLE_DEFAULT_CLIENT_ID and
+            # GOOGLE_DEFAULT_CLIENT_SECRET in your own fork; leaving them
+            # empty keeps the build fully key-free (sign-in UI stays but
+            # sync requires user-provided keys per Google ToS).
+            google_api_key = "${{ secrets.GOOGLE_API_KEY }}"
+            google_default_client_id = "${{ secrets.GOOGLE_DEFAULT_CLIENT_ID }}"
+            google_default_client_secret = "${{ secrets.GOOGLE_DEFAULT_CLIENT_SECRET }}"
+
             # Additional flags for Chromium 148
             enable_autofill_assistant = false
             enable_reading_list = false
