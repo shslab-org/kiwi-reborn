@@ -35,6 +35,7 @@
 #include "chrome/browser/accessibility/accessibility_labels_service_factory.h"
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/adblock/adblock_url_loader_throttle.h"
+#include "chrome/browser/kiwi/kiwi_flags_service.h"
 #include "chrome/browser/bluetooth/chrome_bluetooth_delegate_impl_client.h"
 #include "chrome/browser/browser_about_handler.h"
 #include "chrome/browser/browser_features.h"
@@ -2378,6 +2379,12 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
     for (size_t i = 0; i < extra_parts_.size(); ++i) {
       extra_parts_[i]->AppendExtraRendererCommandLineSwitches(command_line,
                                                               process, profile);
+    }
+
+    // Kiwi Reborn Ultimate: propagate the background-playback toggle to
+    // renderer processes (read by blink via a static command-line check).
+    if (KiwiFlagsService::GetInstance()->IsBackgroundPlaybackEnabled()) {
+      command_line->AppendSwitch("kiwi-background-playback");
     }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

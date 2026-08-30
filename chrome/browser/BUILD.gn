@@ -2498,6 +2498,8 @@ static_library("browser") {
       "adblock/adblock_service.cc",
       "adblock/adblock_tab_helper.cc",
       "adblock/adblock_url_loader_throttle.cc",
+      "kiwi/kiwi_flags_bridge.cc",
+      "kiwi/kiwi_flags_service.cc",
       "after_startup_task_utils_android.cc",
       "android/android_theme_resources.h",
       "android/autocomplete/tab_matcher_android.cc",
