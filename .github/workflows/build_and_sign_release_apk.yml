@@ -112,10 +112,12 @@ jobs:
           cd chromium
           gclient runhooks
 
+      # Note: the 105-era script has no --android flag (Android SDK/NDK come
+      # from the gclient hooks above, not apt).
       - name: Install Android build dependencies
         run: |
           cd chromium/src
-          sudo ./build/install-build-deps.sh --android --no-prompt
+          sudo ./build/install-build-deps.sh --no-prompt
 
       - name: Generate build files (${{ matrix.abi }})
         run: |
