@@ -5,13 +5,13 @@
 <h1 align="center">Kiwi Reborn Ultimate</h1>
 
 <p align="center">
-  <b>Chromium 148 · Android · Brave-style native adblock · universal background playback · desktop-class extension support</b>
+  <b>Chromium 105 · Android · Brave-style native adblock · universal background playback · desktop-class extension support</b>
 </p>
 
 <p align="center">
   <a href="https://github.com/shslab-org/kiwi-reborn/actions/workflows/build_and_sign_release_apk.yml"><img src="https://github.com/shslab-org/kiwi-reborn/actions/workflows/build_and_sign_release_apk.yml/badge.svg" alt="Build APK"/></a>
-  <img src="https://img.shields.io/badge/Engine-Chromium_148.0.7778.96-blue" alt="Engine"/>
-  <img src="https://img.shields.io/badge/Android-10%2B_(API_29)-3ddc84" alt="Android"/>
+  <img src="https://img.shields.io/badge/Engine-Chromium_105.0.5195.24-blue" alt="Engine"/>
+  <img src="https://img.shields.io/badge/Android-6%2B_(API_23)-3ddc84" alt="Android"/>
   <img src="https://img.shields.io/badge/APKs-arm64__v8a_·_armeabi__v7a-orange" alt="ABIs"/>
   <img src="https://img.shields.io/badge/Adblock-Native_C%2B%2B_network--level-EA4AAA" alt="Adblock"/>
   <img src="https://img.shields.io/badge/Extensions-Chrome_Web_Store-4285F4" alt="Extensions"/>
@@ -19,7 +19,7 @@
 
 ---
 
-**Kiwi Reborn Ultimate** is a feature fork of [raihanbhaii/kiwi-reborn](https://github.com/raihanbhaii/kiwi-reborn) — itself part of the [Kiwi Browser](https://github.com/kiwibrowser/src.next) lineage — pinned to **Chromium 148.0.7778.96**. This fork keeps every Kiwi Reborn capability (Chrome Web Store extension support, the full AMOLED/night-mode engine, per-site ads toggle) and adds three things the base did not have:
+**Kiwi Reborn Ultimate** is a feature fork of [raihanbhaii/kiwi-reborn](https://github.com/raihanbhaii/kiwi-reborn) — itself part of the [Kiwi Browser](https://github.com/kiwibrowser/src.next) lineage — built on **Chromium 105.0.5195.24** — the version the overlay's build files actually target (see [Why Chromium 105](#-why-chromium-105-the-honest-story)). This fork keeps every Kiwi Reborn capability (Chrome Web Store extension support, the full AMOLED/night-mode engine, per-site ads toggle) and adds three things the base did not have:
 
 1. a **Brave-inspired native adblock engine** (real C++ engine, network-level blocking + cosmetic filtering),
 2. **universal background playback** for HTML5 media (generic, not site-specific),
@@ -27,6 +27,17 @@
 
 > [!IMPORTANT]
 > **Nothing from the existing Kiwi Reborn feature set was removed.** Every addition is additive and individually toggleable. See [What came from where](#-what-came-from-where-transparency).
+
+## 🔍 Why Chromium 105 (the honest story)
+
+During this fork's first real CI build we hit `gn` errors that pointed somewhere uncomfortable. The investigation:
+
+* The upstream repo's `CHROMIUM_VERSION` was bumped **105 → 112 → 148** in two commits dated May 2026 that each changed **only that one file** (3 lines) — no source imports, no build-file updates.
+* The overlay tree itself is the Kiwi Browser (`kiwibrowser/src.next`) state, whose build files target **Chromium 105.0.5195.24** — the last Kiwi-pinned version. `KIWI_VERSION` in the tree still reads `105.0.5195.33`.
+* Building against a real 148 checkout fails immediately: the 105-era build files import 60+ files that no longer exist in 148 (NaCl, Feed, PPAPI build flags, Cast config, Assistant, old Polymer toolchain — all removed or moved upstream after 105). Upstream's CI could never have run (its workflow was `workflow_dispatch`-only and checked out a fixed ref).
+
+Per this project's own ground rules — *don't break the project for the sake of version numbers* — this fork **realigned the pin to the overlay's true engine, Chromium 105.0.5195.24**, adapted all new feature code to the 105 API surface, and documented the modern-Chromium rebase as the top roadmap item. That trade-off is stated here plainly rather than papered over with a number the build can't back.
+
 
 ## 📖 Contents
 
@@ -165,7 +176,7 @@ CI produces **two APKs** — Chromium's build system outputs one APK per ABI (a 
 | `kiwi-reborn-arm64-v8a` | modern phones (2016+, the vast majority) — **install this one** |
 | `kiwi-reborn-armeabi-v7a` | legacy 32-bit devices |
 
-Runs are manual (`workflow_dispatch`); each artifact keeps 14 days. Requires **Android 10+** (Chromium 148 minimum, API 29). APKs are signed with Chromium's auto-generated debug keystore — installable directly; re-sign with your own release key if you plan to distribute.
+Runs are manual (`workflow_dispatch`); each artifact keeps 14 days. Requires **Android 6.0+** (Chromium 105 default, API 23). APKs are signed with Chromium's auto-generated debug keystore — installable directly; re-sign with your own release key if you plan to distribute.
 
 ## 🛠 Building
 
@@ -175,7 +186,7 @@ Runs are manual (`workflow_dispatch`); each artifact keeps 14 days. Requires **A
 
 Run the **Build Kiwi Reborn APK** workflow ([Actions → Build Kiwi Reborn APK → Run workflow](https://github.com/shslab-org/kiwi-reborn/actions/workflows/build_and_sign_release_apk.yml)). It:
 
-1. syncs Chromium at the version pinned in `CHROMIUM_VERSION` (148.0.7778.96),
+1. syncs Chromium at the version pinned in `CHROMIUM_VERSION` (105.0.5195.24),
 2. overlays this tree on top (the overlay model — see [architecture](#-architecture)),
 3. runs `gn gen` + `autoninja chrome_public_apk` **for both ABIs in parallel**,
 4. uploads `kiwi-reborn-arm64-v8a` and `kiwi-reborn-armeabi-v7a`.
@@ -193,7 +204,7 @@ export PATH="$PWD/depot_tools:$PATH"
 mkdir chromium && cd chromium
 gclient config --name=src https://chromium.googlesource.com/chromium/src.git --unmanaged
 echo "target_os = ['android']" >> .gclient
-gclient sync --no-history --nohooks --revision=src@148.0.7778.96 -D
+gclient sync --no-history --nohooks --revision=src@105.0.5195.24 -D
 
 # 3. Overlay this tree
 git clone https://github.com/shslab-org/kiwi-reborn.git kiwi-patches
@@ -231,7 +242,7 @@ Optional Google keys: append `google_api_key = "..."`, `google_default_client_id
 This repository is an **overlay tree**: it contains only the files that differ from (or are added to) upstream Chromium at the pinned tag. CI assembles the full tree:
 
 ```
- pinned Chromium 148.0.7778.96  (gclient sync)
+ pinned Chromium 105.0.5195.24  (gclient sync)
         +
  this repo's overlay           (cp -rf over the checkout)
         ↓
@@ -260,12 +271,13 @@ Consequence: every modified upstream file (e.g. `chrome/browser/BUILD.gn`, `thir
 
 ## 🧪 Testing
 
-* **Static**: GN source/deps registration checks, `kiwi_java_sources`/resources/`generate_jni` registrations, JNI include paths, macro signatures verified against the Chromium 148 tag (`WEB_CONTENTS_USER_DATA_KEY_IMPL(Type)`, `URLLoaderThrottle` interface, `ExecuteJavaScriptInIsolatedWorld`, isolated-world id bounds).
+* **Static**: GN source/deps registration checks, `kiwi_java_sources`/resources/`generate_jni` registrations, JNI include paths, macro signatures verified against the Chromium 105 tag (`WEB_CONTENTS_USER_DATA_KEY_IMPL(Type)`, `URLLoaderThrottle` interface, `ExecuteJavaScriptInIsolatedWorld`, isolated-world id bounds).
 * **CI**: two-ABI matrix build validates compilation of all C++/Java (this is what the badge reflects).
 * **On-device manual matrix** (post-build): browsing/tabs/downloads/bookmarks/private browsing; CWS install/enable/disable/persist/restart; ad blocking on test pages, custom filters, allowlist, stats; YouTube + generic HTML5 background play, screen lock, notification & Bluetooth controls, multiple media tabs; light/dark/AMOLED themes; cold/warm start, rotation, low memory, long sessions.
 
 ## 📋 Roadmap
 
+- [ ] Rebase the overlay onto a modern Chromium (148+) — see [the honest story](#-why-chromium-105-the-honest-story)
 - [ ] Scriptlet (`#$#`) and procedural (`#?#`) filter support
 - [ ] True `$redirect=` resource substitution (currently blocks)
 - [ ] Per-site visibility-spoof scoping for background playback
@@ -284,7 +296,7 @@ Consequence: every modified upstream file (e.g. `chrome/browser/BUILD.gn`, `thir
 
 | Area | Source |
 |---|---|
-| Chromium 148 engine, extension support, AMOLED/night modes, per-site ads toggle, Kiwi feature set | **raihanbhaii/kiwi-reborn** (preserved) |
+| Chromium 105 engine, extension support, AMOLED/night modes, per-site ads toggle, Kiwi feature set | **raihanbhaii/kiwi-reborn** (preserved) |
 | Native adblock engine, network throttle, cosmetic injection, Adblock settings UI | **new in this fork** (Brave architecture as inspiration, own implementation) |
 | Universal background playback (blink patches + browser plumbing + UI) | **new in this fork** |
 | Optional Google API key plumbing | **new in this fork** (build config only) |
