@@ -17,12 +17,3 @@ declare_args() {
   # currently only being used for New Tab Page being tracked at crbug/1337530.
   enable_webui_inline_sourcemaps = false
 }
-
-# --- Chromium 148 compatibility (from upstream ui/webui/webui_features.gni @ 148.0.7778.96) ---
-declare_args() {
-  # Load WebUI resources from disk at runtime (local development only).
-  load_webui_from_disk = false
-
-  # Enable generation of compiled JS bytecode for opted-in WebUI scripts.
-  enable_webui_generate_code_cache = true
-}

@@ -78,12 +78,3 @@ if (blink_symbol_level == 2) {
 } else {
   blink_symbols_config = [ "//build/config/compiler:default_symbols" ]
 }
-
-# --- Chromium 148 compatibility (from upstream third_party/blink/renderer/config.gni @ 148.0.7778.96) ---
-declare_args() {
-  # Enable JXL decoder in Blink for JPEG XL image decoding.
-  enable_jxl_decoder = true
-
-  # Whether Blink extensions are enabled in //android_webview.
-  use_blink_extensions_webview = is_android
-}
