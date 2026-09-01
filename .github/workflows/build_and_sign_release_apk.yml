@@ -113,11 +113,12 @@ jobs:
           gclient runhooks
 
       # Note: the 105-era script has no --android flag (Android SDK/NDK come
-      # from the gclient hooks above, not apt).
+      # from the gclient hooks above, not apt), and it predates official
+      # ubuntu-22.04 support — hence --unsupported.
       - name: Install Android build dependencies
         run: |
           cd chromium/src
-          sudo ./build/install-build-deps.sh --no-prompt
+          sudo ./build/install-build-deps.sh --no-prompt --unsupported
 
       - name: Generate build files (${{ matrix.abi }})
         run: |
